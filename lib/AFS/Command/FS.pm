@@ -319,16 +319,26 @@ sub _paths_method {
 	    }
 
 	    if ( $operation eq 'examine' ) {
+	    	my $matched = 0;
 
-		if ( /Volume status for vid = (\d+) named (\S+)/ ) {
+		if ( /File (\S+) \(\d+\.\d+\.\d+\) contained in volume \d+/ ) {
+		   $matched = 1;
+		   $path->_setAttribute( path => $1 );
+		   delete $paths{$1};
 
+		} elsif ( /Volume status for vid = (\d+) named (\S+)/ ) {
+		    $matched = 1;
 		    $path->_setAttribute
 		      (
 		       path			=> $paths[0],
 		       id			=> $1,
 		       volname			=> $2,
 		      );
+		    delete $paths{$paths[0]};
+		    shift @paths;
+		}
 
+		if ($matched) {
 		    #
 		    # Looking at Transarc's code, we can safely assume we'll
 		    # get this output in the order shown. Note we ignore the
@@ -338,6 +348,14 @@ sub _paths_method {
 		    while ( defined($_ = $self->{handle}->getline()) ) {
 
 			last if /^\s*$/;
+
+			if ( /Volume status for vid = (\d+) named (\S+)/ ) {
+			    $path->_setAttribute
+			      (
+			       id		=> $1,
+			       volname		=> $2,
+			      );
+			}
 
 			if ( /Current disk quota is (\d+|unlimited)/ ) {
 			    $path->_setAttribute
@@ -358,9 +376,6 @@ sub _paths_method {
 			      );
 			}
 		    }
-
-		    delete $paths{$paths[0]};
-		    shift @paths;
 
 		}
 
