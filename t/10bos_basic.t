@@ -30,7 +30,9 @@ BEGIN {
     } else {
 	$TestTotal = 48;
     }
-    print "1..$TestTotal\n";
+    # Don't output the test plan yet, since the number of tests we run depends
+    # on how many keys via 'bos listkeys' we find. We'll output the test plan
+    # at the end, instead.
 }
 
 END {print "not ok 1\n" unless $Loaded;}
@@ -271,6 +273,12 @@ if ( @indexes ) {
     die("Unable to get indexes from listkeys for bosserver\n");
 }
 
+# we perform 2 tests for every key; so if we have more than one key, output
+# more tests in the test plan
+if ($#indexes > 0) {
+    $TestTotal += $#indexes * 2;
+}
+
 foreach my $index ( @indexes ) {
 
     my $key = $result->getKey($index);
@@ -442,6 +450,8 @@ foreach my $name ( qw(vlserver ptserver) ) {
     }
 
 }
+
+print "1..$TestTotal\n";
 
 exit 0;
 
