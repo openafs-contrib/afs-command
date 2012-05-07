@@ -47,4 +47,8 @@ foreach my $key ( keys %ENV ) {
     $Config{$key} = $ENV{$key};
 }
 
+if (not defined($Config{"AFS_COMMAND_DISABLE_TESTS"})) {
+    $Config{"AFS_COMMAND_DISABLE_TESTS"} = '';
+}
+
 1;
