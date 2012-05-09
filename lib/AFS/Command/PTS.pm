@@ -7,7 +7,7 @@
 
 package AFS::Command::PTS;
 
-require 5.6.0;
+require 5.006_000;
 
 use strict;
 use English;

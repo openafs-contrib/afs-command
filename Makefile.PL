@@ -5,7 +5,7 @@
 # See ..../src/LICENSE for terms of distribution.
 #
 
-require 5.6.0;
+require 5.006_000;
 
 use ExtUtils::MakeMaker;
 

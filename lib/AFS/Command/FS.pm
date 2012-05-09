@@ -7,7 +7,7 @@
 
 package AFS::Command::FS;
 
-require 5.6.0;
+require 5.006_000;
 
 use strict;
 use English;
