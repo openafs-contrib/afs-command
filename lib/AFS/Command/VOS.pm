@@ -379,6 +379,10 @@ sub examine {
 	    $entry->_setAttribute( locked => 1 );
 	    next;
 	}
+	if (/Volume is locked for an? (.+) operation$/) {
+	    $entry->_setAttribute( lockreason => $1 );
+	    next;
+	}
 
 	#
 	# Actually, this is the last possibility...  The volume name
@@ -639,8 +643,11 @@ sub listvldb {
 	    if ( /LOCKED/ ) {
 		$entry->_setAttribute( locked => 1 );
 		$locked++;
+		next;
 	    }
-
+	    if (/Volume is locked for an? (.+) operation$/) {
+		$entry->_setAttribute( lockreason => $1 );
+	    }
 	}
 
 	$result->_addVLDBEntry( $entry );

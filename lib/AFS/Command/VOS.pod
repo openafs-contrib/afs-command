@@ -458,6 +458,18 @@ Note that the 'rclone' attribute is only present if the volume was
 actively being cloned while being examined.  This is true when a 'vos
 release' command is actively updating the RO volumes.
 
+The following attribute may be present present, if the volume is locked:
+
+    Attributes			Values
+    ----------			------
+    lockreason			"move" | "release" | "backup" | "delete/misc" | "dump/restore"
+
+If "vos" does not tell us the lock reason (if the version of "vos" is too old,
+or it doesn't understand the reason code), the 'lockreason' attribute will not
+exist, even if the volume is locked. Otherwise, if the volume is locked, the
+'lockreason' attribute is a string representing the reason why the volume was
+locked. See the documentation for "vos listvldb" for the meaning of each value.
+
 The following methods are available:
 
     Methods			Returns
