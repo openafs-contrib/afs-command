@@ -10,6 +10,6 @@ package AFS::Object::VLDBSite;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 1;

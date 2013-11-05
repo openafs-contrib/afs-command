@@ -10,7 +10,7 @@ package AFS::Object::Path;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub getACL {
     my $self = shift;

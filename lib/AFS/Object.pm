@@ -11,7 +11,7 @@ use strict;
 use Carp;
 
 our $AUTOLOAD = "";
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 our %Carp =
   (

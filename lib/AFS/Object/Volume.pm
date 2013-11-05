@@ -10,7 +10,7 @@ package AFS::Object::Volume;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub getVolumeHeaders {
     my $self = shift;

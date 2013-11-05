@@ -23,7 +23,7 @@ use AFS::Object::Partition;
 use AFS::Object::Transaction;
 
 our @ISA = qw(AFS::Command::Base);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub examine {
 

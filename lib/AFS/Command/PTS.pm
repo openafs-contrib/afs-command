@@ -20,7 +20,7 @@ use AFS::Object::Group;
 use AFS::Object::User;
 
 our @ISA = qw(AFS::Command::Base);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub creategroup {
 

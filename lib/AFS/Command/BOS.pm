@@ -18,7 +18,7 @@ use AFS::Object::BosServer;
 use AFS::Object::Instance;
 
 our @ISA = qw(AFS::Command::Base);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub getdate {
 

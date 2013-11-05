@@ -10,7 +10,7 @@ package AFS::Object::BosServer;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99';
+our $VERSION = '1.99001';
 
 sub getInstanceNames {
     my $self = shift;
