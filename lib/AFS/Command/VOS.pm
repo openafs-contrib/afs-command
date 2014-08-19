@@ -1167,14 +1167,16 @@ sub restore {
 
     my $errors = 0;
 
+    return unless $self->_save_stderr();
+
     $errors++ unless $self->_exec_cmds
       (
-       stderr 			=> 'stdout',
        stdin			=> ( $args{file} ? "/dev/null" : $file ),
       );
 
     $errors++ unless $self->_parse_output();
     $errors++ unless $self->_reap_cmds();
+    $errors++ unless $self->_restore_stderr();
 
     return if $errors;
     return 1;
