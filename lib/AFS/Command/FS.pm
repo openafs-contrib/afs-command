@@ -21,7 +21,7 @@ use AFS::Object::Server;
 use AFS::Object::ACL;
 
 our @ISA = qw(AFS::Command::Base);
-our $VERSION = '1.99001';
+our $VERSION = '1.99002';
 
 sub checkservers {
 

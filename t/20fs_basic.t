@@ -34,7 +34,7 @@ BEGIN {
 }
 
 END {print "not ok 1\n" unless $Loaded;}
-use AFS::Command::FS 1.99001;
+use AFS::Command::FS 1.99002;
 $Loaded = 1;
 $TestCounter = 1;
 print "ok $TestCounter\n";
