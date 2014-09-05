@@ -43,6 +43,10 @@ sub examine {
 
     $errors++ unless $self->_exec_cmds();
 
+    # vos prints an alternate "machine readable" format of the header
+    # when the -format option is given, unless -extended is also given.
+    my $alt_format = $args{format} && !$args{extended};
+
     while ( defined($_ = $self->{handle}->getline()) ) {
 
 	chomp;
@@ -60,7 +64,7 @@ sub examine {
 	# might very well have several of these chunks of data for RO
 	# volumes.
 	#
-	if ( /^\*{4}/ ) {
+	if ( !$alt_format && /^\*{4}/ ) {
 
 	    my $header = AFS::Object::VolumeHeader->new();
 
@@ -84,7 +88,7 @@ sub examine {
 
 	    next;
 
-	} elsif ( /^(\S+)\s+(\d+)\s+(RW|RO|BK)\s+(\d+)\s+K/ ) {
+	} elsif ( !$alt_format && /^(\S+)\s+(\d+)\s+(RW|RO|BK)\s+(\d+)\s+K/ ) {
 
 	    my $header = AFS::Object::VolumeHeader->new();
 
@@ -322,6 +326,62 @@ sub examine {
 
 	    next;
 
+	} elsif ( $alt_format && /^(\S+)\s+(\S+)/ ) {
+	    my $header = AFS::Object::VolumeHeader->new();
+
+	    # Save the first header field.
+	    if (/^(\S+)\s+(\S+)\s*$/) {
+		$header->_setAttribute($1 => $2);
+	    } elsif (/^(\S+)\s+(\S+)\s+\(Optional\)\s*$/) {
+		$header->_setAttribute($1 => $2);
+	    } elsif (/^serv\s+(\S+)\s+(\S+)\s*$/) {
+		$header->_setAttribute(
+		    servAddress => $1,
+		    servName    => $2,
+		);
+	    } elsif (/^(\S+)Date\s+(\S+)\s+(.*)\s*$/) {
+		$header->_setAttribute(
+		    "$1Timestamp" => $2,
+		    "$1Date" => $3,
+		);
+	    } else {
+		$self->_Carp("Unrecognized output format while reading header fields:\n" . $_);
+	    }
+
+	    # Get the rest of the header fields.
+	    while ( defined($_ = $self->{handle}->getline()) ) {
+		chomp;
+		last if /^\s*$/; # Stop when we hit the blank line
+		if (/^(\S+)\s+(\S+)\s*$/) {
+		    $header->_setAttribute($1 => $2);
+		} elsif (/^(\S+)\s+(\S+)\s+\(Optional\)\s*$/) {
+		    $header->_setAttribute($1 => $2);
+		} elsif (/^serv\s+(\S+)\s+(\S+)\s*$/) {
+		    $header->_setAttribute(
+			servAddress => $1,
+			servName    => $2,
+		    );
+		} elsif (/^(\S+)Date\s+(\S+)\s+(.*)\s*$/) {
+		    $header->_setAttribute(
+			"$1Timestamp" => $2,
+			"$1Date" => $3,
+		    );
+		} else {
+		    $self->_Carp("Unrecognized output format while reading header fields:\n" . $_);
+		}
+	    };
+
+	    # Get the volume name line following the header info lines.
+	    # (vos retrieved this value from the vldb, not the volume header,
+	    # so it is available even if the volume is not attached.)
+	    if (defined($_ = $self->{handle}->getline())) {
+		chomp;
+		if (/^(\S+)\s*$/) {
+		    $header->_setAttribute(name => $1);
+		}
+	    }
+	    $result->_addVolumeHeader($header);
+	    next;
 	}
 
 	#
@@ -375,11 +435,11 @@ sub examine {
 	# Last possibility (that we know of) -- volume might be
 	# locked.
 	#
-	if ( /LOCKED/ ) {
+	if ( $_ && /LOCKED/ ) {
 	    $entry->_setAttribute( locked => 1 );
 	    next;
 	}
-	if (/Volume is locked for an? (.+) operation$/) {
+	if ( $_ && /Volume is locked for an? (.+) operation$/) {
 	    $entry->_setAttribute( lockreason => $1 );
 	    next;
 	}
@@ -388,7 +448,7 @@ sub examine {
 	# Actually, this is the last possibility...  The volume name
 	# leading the VLDB entry stanza.
 	#
-	if ( /^(\S+)/ ) {
+	if ( $_ && /^(\S+)/ ) {
 	    $entry->_setAttribute( name => $1 );
 	}
 
