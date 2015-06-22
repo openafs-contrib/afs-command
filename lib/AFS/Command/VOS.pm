@@ -21,6 +21,7 @@ use AFS::Object::VolServer;
 use AFS::Object::FileServer;
 use AFS::Object::Partition;
 use AFS::Object::Transaction;
+use AFS::Object::SizeInfo;
 
 our @ISA = qw(AFS::Command::Base);
 our $VERSION = '1.99002';
@@ -957,6 +958,47 @@ sub partinfo {
     return if $errors;
     return $result;
 
+}
+
+sub size {
+    my $self = shift;
+    my (%args) = @_;
+
+    if (not defined $args{dump}) {
+        # default the -dump flag to on, since this command does effectively
+        # nothing without it. if the user really wants to not do this for
+        # whatever reason, just pass 'dump => 0'.
+        $args{dump} = 1;
+    }
+
+    my $result = AFS::Object::SizeInfo->new();
+
+    $self->{operation} = "size";
+
+    return unless $self->_parse_arguments(%args);
+
+    return unless $self->_save_stderr();
+
+    my $errors = 0;
+
+    $errors++ unless $self->_exec_cmds();
+
+    while ( defined($_ = $self->{handle}->getline()) ) {
+        chomp;
+        if (m/^Volume:\s+(\S+)$/) {
+            $result->_setAttribute(volume => $1);
+        }
+        if (m/^dump_size:\s+(\d+)$/) {
+            $result->_setAttribute(dump_size => $1);
+        }
+    }
+
+    $errors++ unless $self->_reap_cmds();
+
+    $errors++ unless $self->_restore_stderr();
+
+    return if $errors;
+    return $result;
 }
 
 sub status {

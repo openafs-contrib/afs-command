@@ -1324,6 +1324,66 @@ others are not.
 
 =back
 
+=head2 size
+
+=over
+
+=item Arguments
+
+The vos help string is:
+
+    vos size: obtain various sizes of the volume. 
+    Usage: vos size -id <volume name or ID> [-partition <partition name>]
+                    [-server <machine name>] [-dump] [-time <dump from time>]
+                    [-cell <cell name>] [-noauth] [-localauth] [-verbose]
+                    [-encrypt]
+
+The corresponding method invocation looks like this:
+
+    my $result = $vos->size
+      (
+       # Required arguments
+       id              => $volume,
+       # Optional arguments,
+       partition       => $partition,
+       server          => $server,
+       dump            => 1,
+       time            => $timestamp,
+       cell            => $cell,
+       noauth          => 1,
+       localauth       => 1,
+       verbose         => 1,
+       encrypt         => 1,
+      );
+
+The 'dump' option is turned on by default in this API, but is turned off by
+default in vos itself. This command doesn't really do anything if this option
+is not turned on, so there's not much point in turning it off. If you really
+want to turn it off, just pass 'dump => 0'.
+
+=item Return Values
+
+This method returns an AFS::Object::SizeInfo object, which contains attributes
+for the volume name and dump size. If the 'dump' flag was turned off, there is
+no attribute for the dump size.
+
+    my $result = $vos->size
+      (
+       id => $volume,
+      ) || die $vos->errors();
+    print "Volume ".$result->volume." has a dump size of ".$result->dump_size." bytes\n";
+
+B<AFS::Object::SizeInfo>
+
+This object has just two attributes:
+
+    Attributes				Values
+    ----------				------
+    volume				The name of the volume
+    dump_size				The size of the volume dump, in bytes
+
+=back
+
 =head1 METHODS (with simple return values)
 
 All of the following commands return a simple Boolean (true/false)
