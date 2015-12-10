@@ -111,7 +111,7 @@ sub examine {
 		$status = 'online' if $status eq 'On-line';
 		$header->_setAttribute
 		  (
-		   status 		=> $status,
+		   status 		=> $status,  # Note: this name collides with the "new" -format output.
 		   attached		=> 1,
 		  );
 
@@ -134,7 +134,7 @@ sub examine {
 		$status = 'online' if $status eq 'On-line';
 		$header->_setAttribute
 		  (
-		   status 		=> $status,
+		   status 		=> $status,  # Note: This name collides with the "new" -format output.
 		   attached		=> 1,
 		  );
 
@@ -332,7 +332,9 @@ sub examine {
 
 	    # Save the first header field.
 	    if (/^(\S+)\s+(\S+)\s*$/) {
-		$header->_setAttribute($1 => $2);
+		my ($k,$v) = ($1, $2);
+		$k = 'volStatus' if $k eq 'status';  # avoid name collision with our 'status'!
+		$header->_setAttribute($k => $v);
 	    } elsif (/^(\S+)\s+(\S+)\s+\(Optional\)\s*$/) {
 		$header->_setAttribute($1 => $2);
 	    } elsif (/^serv\s+(\S+)\s+(\S+)\s*$/) {
@@ -353,8 +355,11 @@ sub examine {
 	    while ( defined($_ = $self->{handle}->getline()) ) {
 		chomp;
 		last if /^\s*$/; # Stop when we hit the blank line
+
 		if (/^(\S+)\s+(\S+)\s*$/) {
-		    $header->_setAttribute($1 => $2);
+		    my ($k,$v) = ($1, $2);
+		    $k = 'volStatus' if $k eq 'status';  # avoid name collision with our 'status'!
+		    $header->_setAttribute($k => $v);
 		} elsif (/^(\S+)\s+(\S+)\s+\(Optional\)\s*$/) {
 		    $header->_setAttribute($1 => $2);
 		} elsif (/^serv\s+(\S+)\s+(\S+)\s*$/) {
@@ -381,6 +386,28 @@ sub examine {
 		    $header->_setAttribute(name => $1);
 		}
 	    }
+
+	    # Generate a 'status' attribute to mimic the 'status' returned when
+	    # -format is not set. The value is a combination of the volume header
+	    # 'status' and 'inUse' fields.  The volume header 'status' field
+	    # returned by vos was aliased to 'volStatus' to avoid the name
+	    # collision with our synthetic 'status' attribute.
+	    my $volStatus = $header->getAttribute('volStatus');
+	    my $inUse = $header->getAttribute('inUse');
+	    my $status;
+	    if ($volStatus eq 'OK') {
+		if ($inUse eq 'Y') {
+		    $status = 'online';
+		} else {
+		    $status = 'offline';
+		}
+	    } elsif ($volStatus eq 'BUSY') {
+		$status = 'busy';
+	    } else {
+		$status = 'offline';
+	    }
+	    $header->_setAttribute(status => $status);
+
 	    $result->_addVolumeHeader($header);
 	    next;
 	}
