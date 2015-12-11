@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               AFS-Command
-version:            1.99002
+version:            1.99003
 abstract:           ~
 author:
     - W. Phillip Moore <Phil.Moore@MorganStanley.com>

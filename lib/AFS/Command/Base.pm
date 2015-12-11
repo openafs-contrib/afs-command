@@ -19,7 +19,7 @@ use IO::File;
 use IO::Pipe;
 
 our $AUTOLOAD	= "";
-our $VERSION = '1.99002';
+our $VERSION = '1.99003';
 
 our %Carp =
   (

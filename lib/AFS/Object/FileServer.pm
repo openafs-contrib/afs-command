@@ -10,7 +10,7 @@ package AFS::Object::FileServer;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99002';
+our $VERSION = '1.99003';
 
 sub getPartitionNames {
     my $self = shift;

@@ -10,7 +10,7 @@ package AFS::Object::VLDBEntry;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99002';
+our $VERSION = '1.99003';
 
 sub getVLDBSites {
     my $self = shift;
