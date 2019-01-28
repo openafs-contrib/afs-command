@@ -240,6 +240,7 @@ sub _arguments {
 	die "Unable to exec @command help $operation: $ERRNO\n";
 
     } else {
+        my $seen_usage = 0;
 
 	$pipe->reader();
 
@@ -251,7 +252,18 @@ sub _arguments {
 		last;
 	    }
 
-	    next unless s/^Usage:.*\s+$operation\s+//;
+            # With OpenAFS 1.8, the help usage message can print options on
+            # multiple lines. Skip everything before the first 'Usage:'
+            # message, and keep processing the usage message on subsequent
+            # lines that begin with whitespace.
+
+            if (s/^Usage:.*\s+$operation\s+//) {
+                $seen_usage = 1;
+            } elsif (!$seen_usage) {
+                next;
+            } elsif (not s/^\s+//) {
+                last;
+            }
 
 	    while ( $_ ) {
 		if ( s/^\[\s*-(\w+?)\s*\]\s*//  ) {
@@ -274,8 +286,6 @@ sub _arguments {
 		    last;
 		}
 	    }
-
-	    last;
 
 	}
 
