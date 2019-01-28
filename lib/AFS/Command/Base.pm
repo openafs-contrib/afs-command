@@ -266,12 +266,12 @@ sub _arguments {
             }
 
 	    while ( $_ ) {
-		if ( s/^\[\s*-(\w+?)\s*\]\s*//  ) {
+		if ( s/^\[\s*-(\w+?)( [|] -\w+)*\s*\]\s*//  ) {
 		    $arguments->{optional}->{$1} = 0
 		      unless $1 eq 'help'; # Yeah, skip it...
-		} elsif ( s/^\[\s*-(\w+?)\s+<[^>]*?>\+\s*]\s*// ) {
+		} elsif ( s/^\[\s*-(\w+?)( [|] -\w+)*\s+<[^>]*?>\+\s*]\s*// ) {
 		    $arguments->{optional}->{$1} = [];
-		} elsif ( s/^\[\s*-(\w+?)\s+<[^>]*?>\s*]\s*// ) {
+		} elsif ( s/^\[\s*-(\w+?)( [|] -\w+)*\s+<[^>]*?>\s*]\s*// ) {
 		    $arguments->{optional}->{$1} = 1;
 		} elsif ( s/^\s*-(\w+?)\s+<[^>]*?>\+\s*// ) {
 		    $arguments->{required}->{$1} = [];
