@@ -240,6 +240,7 @@ sub _arguments {
 	die "Unable to exec @command help $operation: $ERRNO\n";
 
     } else {
+        my $seen_usage = 0;
 
 	$pipe->reader();
 
@@ -251,21 +252,32 @@ sub _arguments {
 		last;
 	    }
 
-	    next unless s/^Usage:.*\s+$operation\s+//;
+            # With OpenAFS 1.8, the help usage message can print options on
+            # multiple lines. Skip everything before the first 'Usage:'
+            # message, and keep processing the usage message on subsequent
+            # lines that begin with whitespace.
+
+            if (s/^Usage:.*\s+$operation\s+//) {
+                $seen_usage = 1;
+            } elsif (!$seen_usage) {
+                next;
+            } elsif (not s/^\s+//) {
+                last;
+            }
 
 	    while ( $_ ) {
-		if ( s/^\[\s*-(\w+?)\s*\]\s*//  ) {
+		if ( s/^\[\s*-([\w-]+?)( [|] -[\w-]+)*\s*\]\s*//  ) {
 		    $arguments->{optional}->{$1} = 0
 		      unless $1 eq 'help'; # Yeah, skip it...
-		} elsif ( s/^\[\s*-(\w+?)\s+<[^>]*?>\+\s*]\s*// ) {
+		} elsif ( s/^\[\s*-([\w-]+?)( [|] -[\w-]+)*\s+<[^>]*?>\+\s*]\s*// ) {
 		    $arguments->{optional}->{$1} = [];
-		} elsif ( s/^\[\s*-(\w+?)\s+<[^>]*?>\s*]\s*// ) {
+		} elsif ( s/^\[\s*-([\w-]+?)( [|] -[\w-]+)*\s+<[^>]*?>\s*]\s*// ) {
 		    $arguments->{optional}->{$1} = 1;
-		} elsif ( s/^\s*-(\w+?)\s+<[^>]*?>\+\s*// ) {
+		} elsif ( s/^\s*-([\w-]+?)\s+<[^>]*?>\+\s*// ) {
 		    $arguments->{required}->{$1} = [];
-		} elsif ( s/^\s*-(\w+?)\s+<[^>]*?>\s*// ) {
+		} elsif ( s/^\s*-([\w-]+?)\s+<[^>]*?>\s*// ) {
 		    $arguments->{required}->{$1} = 1;
-		} elsif ( s/^\s*-(\w+?)\s*// ) {
+		} elsif ( s/^\s*-([\w-]+?)\s*// ) {
 		    $arguments->{required}->{$1} = 0;
 		} else {
 		    $self->_Carp("Unable to parse @command help for $operation\n" .
@@ -274,8 +286,6 @@ sub _arguments {
 		    last;
 		}
 	    }
-
-	    last;
 
 	}
 
