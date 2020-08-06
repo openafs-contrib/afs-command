@@ -10,7 +10,7 @@ package AFS::Object::ACL;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99003';
+our $VERSION = '1.99004';
 
 sub getPrincipals {
     my $self = shift;

@@ -9,7 +9,7 @@ package AFS::Object::Principal;
 
 use strict;
 
-our $VERSION = '1.99003';
+our $VERSION = '1.99004';
 
 sub _addOwned {
     my $self = shift;

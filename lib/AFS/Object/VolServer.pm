@@ -10,7 +10,7 @@ package AFS::Object::VolServer;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99003';
+our $VERSION = '1.99004';
 
 sub getPartitionNames {
     my $self = shift;

@@ -10,7 +10,7 @@ package AFS::Object::PTServer;
 use strict;
 
 our @ISA = qw(AFS::Object);
-our $VERSION = '1.99003';
+our $VERSION = '1.99004';
 
 sub getGroupNames {
     my $self = shift;

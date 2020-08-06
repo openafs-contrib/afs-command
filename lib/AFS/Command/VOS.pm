@@ -24,7 +24,7 @@ use AFS::Object::Transaction;
 use AFS::Object::SizeInfo;
 
 our @ISA = qw(AFS::Command::Base);
-our $VERSION = '1.99003';
+our $VERSION = '1.99004';
 
 sub examine {
 
